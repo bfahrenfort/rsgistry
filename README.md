@@ -25,3 +25,8 @@ Feature: File Upload
 
 ## Documentation
 WIP
+
+### Using rsgistry
+Modify the files in `scaffold/` to suit your use case.
+
+Host on shuttle.rs.
