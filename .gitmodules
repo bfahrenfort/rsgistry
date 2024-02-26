@@ -1,0 +1,3 @@
+[submodule "shuttle"]
+	path = shuttle
+	url = https://github.com/bfahrenfort/rsgistry-shuttle
