@@ -492,6 +492,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cute"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "45e700c2d1c3feea9b695e79b2dfeeb93040556a58c556fae23f71b1e6b449fd"
+
+[[package]]
 name = "der"
 version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1242,6 +1248,7 @@ checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 name = "macros"
 version = "0.1.0"
 dependencies = [
+ "cute",
  "proc-quote",
  "syn 2.0.51",
 ]
@@ -1982,6 +1989,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.7.4",
  "axum-extra",
+ "cute",
  "jsonwebtoken",
  "mixin",
  "once_cell",
