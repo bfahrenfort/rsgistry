@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "shuttle",
+    "scaffold",
+    "macros"
+]
+
+resolver = "2"
+
+exclude = ["frontend"]
+
+[profile.release]
+lto = true
