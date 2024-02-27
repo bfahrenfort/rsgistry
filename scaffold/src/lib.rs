@@ -1,4 +1,4 @@
-use macros::Countable;
+use macros::{Countable, Listable};
 use serde::{Deserialize, Serialize};
 use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 
@@ -7,7 +7,7 @@ use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 // - Others will be NOT NULL
 // You can probably use this type to send your requests from your API consumers as well!
 // - ...obviously minus the mixin junk
-#[derive(Serialize, Deserialize, Debug, Countable)]
+#[derive(Serialize, Deserialize, Debug, Countable, Listable)]
 #[mixin::declare]
 pub struct Entry {
     pub program_name: String,
@@ -28,7 +28,7 @@ impl Entry {
 }
 
 #[mixin::insert(Entry)]
-#[derive(Deserialize, FromRow, Serialize, Countable)]
+#[derive(Deserialize, FromRow, Serialize, Countable, Listable)]
 pub struct QueueNew {
     pub request_type: String,
 }
@@ -48,13 +48,13 @@ impl QueueNew {
 // Internal database types, basically all of the above Entry plus the automatically-generated fields
 // You may need to adjust these depending on your schema, but it's not likely
 #[mixin::insert(Entry)]
-#[derive(Serialize, FromRow)]
+#[derive(Serialize, FromRow, Listable)]
 pub struct EntryWithID {
     pub id: i32,
 }
 
 #[mixin::insert(Entry)]
-#[derive(Serialize, Deserialize, Debug, Clone, FromRow)]
+#[derive(Serialize, Deserialize, Debug, Clone, FromRow, Listable)]
 pub struct Queue {
     pub id: i32,
     pub request_type: String,
