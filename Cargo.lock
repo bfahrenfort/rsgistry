@@ -2007,6 +2007,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsgistry-tests"
+version = "0.1.0"
+dependencies = [
+ "macros",
+ "scaffold",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
