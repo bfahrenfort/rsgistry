@@ -66,7 +66,7 @@ pub fn get_key(input: TokenStream) -> TokenStream {
     TokenStream::from(output)
 }
 
-#[proc_macro_derive(FromQueueNew)]
+#[proc_macro_derive(FromQueue)]
 pub fn from(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as ItemStruct);
     let mut stmts = Vec::<proc_quote::__rt::TokenStream>::new();

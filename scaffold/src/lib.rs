@@ -1,4 +1,4 @@
-use macros::{Bindable, Countable, FromQueueNew, Keyed, Listable};
+use macros::{Bindable, Countable, FromQueue, Keyed, Listable};
 use serde::{Deserialize, Serialize};
 use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 
@@ -9,7 +9,7 @@ use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 // - ...obviously minus the mixin and custom macro stuff
 // Make sure one field is prepended with UNIQUE, this will be used for fetches
 // - ex. a package or extension name
-#[derive(Serialize, Deserialize, Countable, Listable, Keyed, FromQueueNew, Bindable)]
+#[derive(Serialize, Deserialize, Countable, Listable, Keyed, FromQueue, Bindable)]
 #[bind_to(EntryWithID)]
 #[mixin::declare]
 pub struct Entry {
