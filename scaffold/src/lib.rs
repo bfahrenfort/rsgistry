@@ -1,50 +1,31 @@
-use macros::{Countable, Listable};
+use macros::{Bindable, Countable, FromQueueNew, Keyed, Listable};
 use serde::{Deserialize, Serialize};
 use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 
 // This is exactly how your Entry looks in the database migrations, less the ID
 // - Use Option<SomeType> for fields that can be NULL
 // - Others will be NOT NULL
-// You can probably use this type to send your requests from your API consumers as well!
-// - ...obviously minus the mixin junk
-#[derive(Serialize, Deserialize, Debug, Countable, Listable)]
+// You can probably use this type to send your requests from your custom API consumers as well!
+// - ...obviously minus the mixin and custom macro stuff
+// Make sure one field is prepended with UNIQUE, this will be used for fetches
+// - ex. a package or extension name
+#[derive(Serialize, Deserialize, Countable, Listable, Keyed, FromQueueNew, Bindable)]
+#[bind_to(EntryWithID)]
 #[mixin::declare]
 pub struct Entry {
-    pub program_name: String,
+    #[serde(rename = "name")] // Allows the database to work without the UNIQUE_ qualifier
+    pub UNIQUE_name: String,
     pub doctype: String,
     pub url: Option<String>,
 }
 
-impl Entry {
-    pub fn bind<'q>(
-        self: &'q Entry,
-        query: QueryAs<'q, Postgres, EntryWithID, <Postgres as HasArguments>::Arguments>,
-    ) -> QueryAs<'q, Postgres, EntryWithID, <Postgres as HasArguments>::Arguments> {
-        query
-            .bind(&self.program_name)
-            .bind(&self.doctype)
-            .bind(&self.url)
-    }
-}
-
 #[mixin::insert(Entry)]
-#[derive(Deserialize, FromRow, Serialize, Countable, Listable)]
+#[derive(Deserialize, FromRow, Serialize, Countable, Listable, Bindable)]
+#[bind_to(Queue)]
 pub struct QueueNew {
     pub request_type: String,
 }
 
-impl QueueNew {
-    pub fn bind<'q>(
-        self: &'q QueueNew,
-        query: QueryAs<'q, Postgres, Queue, <Postgres as HasArguments>::Arguments>,
-    ) -> QueryAs<'q, Postgres, Queue, <Postgres as HasArguments>::Arguments> {
-        query
-            .bind(&self.program_name)
-            .bind(&self.doctype)
-            .bind(&self.url)
-            .bind(&self.request_type)
-    }
-}
 // Internal database types, basically all of the above Entry plus the automatically-generated fields
 // You may need to adjust these depending on your schema, but it's not likely
 #[mixin::insert(Entry)]
