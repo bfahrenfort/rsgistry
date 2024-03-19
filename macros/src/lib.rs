@@ -118,7 +118,6 @@ pub fn bind(input: TokenStream) -> TokenStream {
         .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "bind_to")
         .expect("Struct type must have attribute bind_to(QueryReturnType) to derive Bindable!")
         .parse_args()
-        .expect("Invalid argument of bind_to");
 
     let output = quote! {
         impl #name {
