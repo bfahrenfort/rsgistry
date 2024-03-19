@@ -3,7 +3,9 @@ use proc_macro::TokenStream;
 use proc_quote::quote;
 use syn::{
     parse::{Parse, ParseStream},
-    parse_macro_input, Field, ItemStruct,
+    parse_macro_input,
+    punctuated::Punctuated,
+    ItemStruct, Token,
 };
 
 #[proc_macro_derive(Countable)]
@@ -43,22 +45,33 @@ pub fn list_fields(input: TokenStream) -> TokenStream {
     TokenStream::from(output)
 }
 
-#[proc_macro_derive(Keyed)]
+struct Keys(Punctuated<syn::Ident, Token![,]>);
+impl Parse for Keys {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let keys = input.parse_terminated(syn::Ident::parse, Token![,])?;
+        Ok(Keys(keys))
+    }
+}
+
+#[proc_macro_derive(Keyed, attributes(keys))]
 pub fn get_key(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as ItemStruct);
-    let key = input
-        .fields
+    let Keys(keys) = input
+        .attrs
         .iter()
-        .filter(|e| e.ident.as_ref().unwrap().to_string().starts_with("UNIQUE"))
-        .collect::<Vec<&Field>>()[0]; // There should only be one
-                                      // Todo allow multi-identifier Entries
-    let key_name = &key.ident.as_ref().unwrap().to_string();
+        .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "keys")
+        .expect("Struct type must have attribute keys(param1, ...) to derive Keyed!")
+        .parse_args()
+        .expect("Invalid argument of macro attribute keys");
+
+    let keys: Vec<String> = keys.into_iter().map(|e| e.to_string()).collect();
 
     let name = &input.ident;
+    let len = keys.len();
     let output = quote! {
         impl #name {
-            pub fn get_key<'a>() -> &'a str {
-                #key_name
+            pub fn get_keys() -> [&'static str; #len] {
+                [#(#keys), *]
             }
         }
     };
@@ -118,6 +131,7 @@ pub fn bind(input: TokenStream) -> TokenStream {
         .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "bind_to")
         .expect("Struct type must have attribute bind_to(QueryReturnType) to derive Bindable!")
         .parse_args()
+        .expect("Invalid argument of macro attribute bind_to");
 
     let output = quote! {
         impl #name {

@@ -15,10 +15,10 @@ use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 // - ex. a package or extension name
 #[derive(Serialize, Deserialize, JsonSchema, Countable, Listable, Keyed, FromQueue, Bindable)]
 #[bind_to(EntryWithID)]
+#[keys(name)]
 #[mixin::declare]
 pub struct Entry {
-    #[serde(rename = "name")] // Allows the database to work without the UNIQUE_ qualifier
-    pub UNIQUE_name: String,
+    pub name: String,
     // pub doctype: String,
     // pub url: Option<String>,
 }
