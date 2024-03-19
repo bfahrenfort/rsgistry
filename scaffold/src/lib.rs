@@ -23,6 +23,13 @@ pub struct Entry {
     // pub url: Option<String>,
 }
 
+// ***
+// Everything else in this file is only here for scoping reasons.
+// You can safely ignore for 99% of use cases.
+// ***
+
+// Internal database types, basically all of the above Entry plus queue fields
+// You may need to adjust these depending on your schema, but it's not likely
 #[mixin::insert(Entry)]
 #[derive(Deserialize, JsonSchema, FromRow, Serialize, Countable, Listable, Bindable)]
 #[bind_to(Queue)]
@@ -30,8 +37,7 @@ pub struct QueueNew {
     pub request_type: String,
 }
 
-// Internal database types, basically all of the above Entry plus the automatically-generated fields
-// You may need to adjust these depending on your schema, but it's not likely
+// The full main database type
 #[mixin::insert(Entry)]
 #[derive(Serialize, JsonSchema, FromRow, Listable)]
 pub struct EntryWithID {
