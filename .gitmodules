@@ -1,3 +1,6 @@
 [submodule "shuttle"]
 	path = shuttle
 	url = https://github.com/bfahrenfort/rsgistry-shuttle
+[submodule "rsgistry-leptos"]
+	path = rsgistry-leptos
+	url = https://github.com/bfahrenfort/rsgistry-leptos
