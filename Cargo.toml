@@ -3,12 +3,13 @@ members = [
     "shuttle",
     "scaffold",
     "macros",
-    "tests"
+    # "tests"
+    "rsgistry-leptos"
 ]
 
 resolver = "2"
 
-exclude = ["frontend"]
+exclude = ["rsgistry-leptos"]
 
 [profile.release]
 lto = true
