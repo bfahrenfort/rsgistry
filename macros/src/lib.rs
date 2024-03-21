@@ -1,4 +1,5 @@
 extern crate proc_macro;
+use cute::c;
 use proc_macro::TokenStream;
 use proc_quote::quote;
 use syn::{
@@ -147,8 +148,8 @@ impl Parse for BindTo {
     }
 }
 
-#[proc_macro_derive(Bindable, attributes(bind_to))]
-pub fn bind(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(PushBindable, attributes(bind_to))]
+pub fn push_bind(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as ItemStruct);
     let mut stmts = Vec::<proc_quote::__rt::TokenStream>::new();
     for field in input.fields.iter() {
@@ -161,7 +162,7 @@ pub fn bind(input: TokenStream) -> TokenStream {
         .attrs
         .iter()
         .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "bind_to")
-        .expect("Struct type must have attribute bind_to(QueryReturnType) to derive Bindable!")
+        .expect("Struct type must have attribute bind_to(QueryReturnType) to derive PushBindable!")
         .parse_args()
         .expect("Invalid argument of macro attribute bind_to");
 
@@ -173,6 +174,45 @@ pub fn bind(input: TokenStream) -> TokenStream {
             ) -> QueryAs<'q, Postgres, #ret_ty, <Postgres as HasArguments>::Arguments> {
                 query
                     #(.bind(&self.#stmts))*
+            }
+        }
+    };
+
+    TokenStream::from(output)
+}
+
+#[proc_macro_derive(FetchBindable)]
+pub fn fetch_bind(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as ItemStruct);
+
+    let name = &input.ident;
+    let BindTo(ret_ty) = input
+        .attrs
+        .clone()
+        .iter()
+        .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "bind_to")
+        .expect("Struct type must have attribute bind_to(QueryReturnType) to derive FetchBindable!")
+        .parse_args()
+        .expect("Invalid argument of macro attribute bind_to");
+    let Keys(keys) = input
+        .attrs
+        .iter()
+        .find(|a| a.path().segments.len() == 1 && a.path().segments[0].ident == "keys")
+        .expect("Struct type must have attribute keys(param1, ...) to derive FetchBindable!")
+        .parse_args()
+        .expect("Invalid argument of macro attribute keys");
+
+    let key_tuple_struct_ty = syn::Ident::new(&format!("{}KeyTupleStruct", name), name.span());
+    let vars = c![x.to_string(), for x in 0..keys.len()];
+    let key_tuple_hack = vars.iter().map(|e| syn::LitInt::new(e, name.span())); // Cursed
+    let output = quote! {
+        impl #name {
+            pub fn fetch_bind<'q>(
+                keyTuple: #key_tuple_struct_ty,
+                query: QueryAs<'q, Postgres, #ret_ty, <Postgres as HasArguments<'q>>::Arguments>
+            ) -> QueryAs<Postgres, #ret_ty, <Postgres as HasArguments<'q>>::Arguments> {
+                query
+                    #(.bind(keyTuple.#key_tuple_hack))*
             }
         }
     };
