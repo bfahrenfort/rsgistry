@@ -54,7 +54,7 @@ impl Parse for Keys {
 }
 
 #[proc_macro_derive(Keyed, attributes(keys))]
-pub fn get_key(input: TokenStream) -> TokenStream {
+pub fn get_keys(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as ItemStruct);
     let Keys(keys) = input
         .attrs
@@ -65,13 +65,46 @@ pub fn get_key(input: TokenStream) -> TokenStream {
         .expect("Invalid argument of macro attribute keys");
 
     let keys: Vec<String> = keys.into_iter().map(|e| e.to_string()).collect();
+    let key_fields: Vec<syn::Field> = input
+        .fields
+        .into_iter()
+        .filter(|f| keys.contains(&f.ident.as_ref().unwrap().to_string()))
+        .collect();
 
     let name = &input.ident;
+    let key_types = key_fields
+        .iter()
+        .map(|f| f.ty.clone())
+        .collect::<Vec<syn::Type>>();
+    let key_idents = key_fields
+        .iter()
+        .map(|f| f.ident.clone().unwrap())
+        .collect::<Vec<syn::Ident>>();
+    let key_names = key_idents
+        .iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<String>>();
+    let tuple_name = syn::Ident::new(&format!("{}KeyTuple", name), name.span());
+    let tuple_struct_name = syn::Ident::new(&format!("{}KeyTupleStruct", name), name.span());
     let len = keys.len();
     let output = quote! {
+        pub type #tuple_name = (#(#key_types), *);
+        pub struct #tuple_struct_name(#(pub #key_types), *);
         impl #name {
             pub fn get_keys() -> [&'static str; #len] {
                 [#(#keys), *]
+            }
+
+            // Cursed
+            pub fn yeet_tuple((#(#key_idents), *): #tuple_name) -> #tuple_struct_name {
+                #tuple_struct_name(
+                    #(#key_idents), *
+                )
+            }
+
+            pub fn transform_fetch_route(o: aide::transform::TransformOperation) -> aide::transform::TransformOperation {
+                o
+                    #(.parameter::<#key_types, _>(#key_names, |op| {op.description("A unique constraint on the entry")}))*
             }
         }
     };
@@ -91,7 +124,6 @@ pub fn from(input: TokenStream) -> TokenStream {
         let name = field.ident.as_ref().unwrap();
         stmts.push(quote! { #name });
     }
-    // Todo allow multi-identifier Entries
 
     let name = &input.ident;
     let output = quote! {
