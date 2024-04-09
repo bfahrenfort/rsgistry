@@ -1,6 +1,3 @@
-// Macro uses an all-caps prefix to be visually distinct
-#![allow(non_snake_case)]
-
 use aide::OperationIo;
 use macros::{Countable, FetchBindable, FromQueue, Keyed, Listable, PushBindable};
 use schemars::JsonSchema;
