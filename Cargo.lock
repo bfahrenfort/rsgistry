@@ -2453,13 +2453,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsgistry-leptos"
-version = "0.1.0"
-dependencies = [
- "leptos",
-]
-
-[[package]]
 name = "rsgistry-macros"
 version = "0.1.0"
 dependencies = [
@@ -2506,6 +2499,13 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
+]
+
+[[package]]
+name = "rsgistry-web"
+version = "0.1.0"
+dependencies = [
+ "leptos",
 ]
 
 [[package]]
