@@ -9,8 +9,9 @@ use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
 // - Others will be NOT NULL
 // You can probably use this type to send your requests from your custom API consumers as well!
 // - ...obviously minus the mixin and custom macro stuff
-// Make sure one field is prepended with UNIQUE, this will be used for fetches
-// - ex. a package or extension name
+// Make sure you specify at least one field (multiple supported, comma-separated)
+//   in the keys attribute, these should be your database keys
+//   (specified as UNIQUE (key1, key2) in migrations)
 #[derive(
     Serialize,
     Deserialize,
@@ -49,6 +50,7 @@ pub struct QueueNew {
 }
 
 // The full main database type
+// If you add any extra administrative fields, track them here
 #[mixin::insert(Entry)]
 #[derive(Serialize, OperationIo, JsonSchema, FromRow, Listable)]
 pub struct EntryWithID {
