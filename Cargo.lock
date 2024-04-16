@@ -1705,15 +1705,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 
 [[package]]
-name = "macros"
-version = "0.1.0"
-dependencies = [
- "cute",
- "proc-quote",
- "syn 2.0.51",
-]
-
-[[package]]
 name = "manyhow"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2469,6 +2460,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsgistry-macros"
+version = "0.1.0"
+dependencies = [
+ "cute",
+ "proc-quote",
+ "syn 2.0.51",
+]
+
+[[package]]
+name = "rsgistry-scaffold"
+version = "0.1.0"
+dependencies = [
+ "aide",
+ "axum 0.7.4",
+ "mixin",
+ "rsgistry-macros",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sqlx",
+]
+
+[[package]]
 name = "rsgistry-shuttle"
 version = "0.1.0"
 dependencies = [
@@ -2481,7 +2495,7 @@ dependencies = [
  "mixin",
  "once_cell",
  "rand",
- "scaffold",
+ "rsgistry-scaffold",
  "schemars",
  "serde",
  "serde_json",
@@ -2490,6 +2504,7 @@ dependencies = [
  "shuttle-shared-db",
  "sqlx",
  "tokio",
+ "toml",
  "tracing",
 ]
 
@@ -2590,20 +2605,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "scaffold"
-version = "0.1.0"
-dependencies = [
- "aide",
- "axum 0.7.4",
- "macros",
- "mixin",
- "schemars",
- "serde",
- "serde_json",
- "sqlx",
 ]
 
 [[package]]

@@ -4,12 +4,12 @@ members = [
     "scaffold",
     "macros",
     # "tests"
-    "rsgistry-leptos"
+    "web"
 ]
 
 resolver = "2"
 
-exclude = ["rsgistry-leptos"]
+exclude = ["web"]
 
 [profile.release]
 lto = true
