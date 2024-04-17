@@ -1,8 +1,9 @@
 use aide::OperationIo;
-use macros::{Countable, FetchBindable, FromQueue, Keyed, Listable, PushBindable};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use sqlx::{database::HasArguments, query::QueryAs, FromRow, Postgres};
+
+use macros::{Countable, FetchBindable, FromQueue, Keyed, Listable, PushBindable};
 
 // This is exactly how your Entry looks in the database migrations, less the ID
 // - Use Option<SomeType> for fields that can be NULL
